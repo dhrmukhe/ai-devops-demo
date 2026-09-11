@@ -1,4 +1,6 @@
-FROM python:3.12-slim
+FROM python:3.12.14-alpine3.24
+
+RUN apk upgrade
 
 ENV PYTHONUNBUFFERED=1
 
@@ -9,8 +11,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 
-RUN useradd --create-home --uid 1000 appuser \
+RUN adduser -D -u 1000 appuser \
     && chown -R appuser:appuser /app
+
 USER appuser
 
 EXPOSE 8080

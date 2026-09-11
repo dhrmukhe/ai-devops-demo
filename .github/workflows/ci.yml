@@ -24,8 +24,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run syntax check
-        run: python -m py_compile app.py
+      - name: Run tests
+        run: pytest
 
       - name: Build Docker image
         run: docker build -t ai-devops-demo:${{ github.sha }} .

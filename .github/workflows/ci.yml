@@ -29,6 +29,25 @@ jobs:
       - name: Analyze with CodeQL
         uses: github/codeql-action/analyze@v4
 
+  dependency-scan:
+    name: Dependency Scan (pip-audit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pip-audit
+        run: python -m pip install --upgrade pip pip-audit
+
+      - name: Audit Python dependencies
+        run: pip-audit -r requirements.txt
+
   build-and-test:
     runs-on: ubuntu-latest
 

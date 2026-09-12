@@ -77,3 +77,21 @@ jobs:
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
+  helm-validation:
+    name: Helm Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.17.3
+
+      - name: Helm lint
+        run: helm lint helm/ai-devops-demo
+
+      - name: Helm template
+        run: helm template ai-devops-demo helm/ai-devops-demo

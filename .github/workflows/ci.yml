@@ -111,3 +111,41 @@ jobs:
 
       - name: Helm template
         run: helm template ai-devops-demo helm/ai-devops-demo
+  update-gitops:
+    name: Update GitOps image tag
+    needs:
+      - sast-codeql
+      - dependency-scan
+      - build-and-test
+      - helm-validation
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps repository
+        uses: actions/checkout@v4
+        with:
+          repository: dhrmukhe/ai-devops-demo-gitops
+          token: ${{ secrets.GITOPS_TOKEN }}
+          path: gitops
+
+      - name: Update image tag
+        working-directory: gitops
+        run: |
+          sed -i "s|^  tag:.*|  tag: \"${GITHUB_SHA}\"|" environments/dev/values.yaml
+
+      - name: Commit and push GitOps change
+        working-directory: gitops
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add environments/dev/values.yaml
+
+          if git diff --cached --quiet; then
+            echo "No GitOps changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Deploy application version ${GITHUB_SHA}"
+          git push origin master        

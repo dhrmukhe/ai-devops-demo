@@ -88,7 +88,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tag Docker image for GHCR
+        run: docker tag ai-devops-demo:${{ github.sha }} ghcr.io/${{ github.repository }}:${{ github.sha }}
 
+      - name: Push Docker image to GHCR
+        run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
   helm-validation:
     name: Helm Validation
     runs-on: ubuntu-latest
